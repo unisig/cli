@@ -170,9 +170,6 @@ static void binary_input_random(void *bytes, size_t nbyte)
     binary_input_file_close();
 }
 
-static const char *namespace_dns = "6ba7b810-9dad-11d1-80b4-00c04fd430c8";
-static const char *namespace_url = "6ba7b811-9dad-11d1-80b4-00c04fd430c8";
-
 static unsigned int parse_hex_digit(int ch)
 {
     const char digits[] = "0123456789abcdef";
