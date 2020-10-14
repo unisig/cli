@@ -249,6 +249,12 @@ static void generate_uuid_variant_1_version_four(void)
     uuid_patch(0x40);
 }
 
+static int is_safe_unisig_uri_char(int ch)
+{
+    return (((ch >= '0') && (ch <= '9')) || ((ch >= 'A') && (ch <= 'Z'))
+        || ((ch >= 'a') && (ch <= 'z')) || (!!strchr("/.-#", ch)));
+}
+
 static void make_unisig_from_arg(const char *arg)
 {
     size_t nbyte;
@@ -263,15 +269,9 @@ static void make_unisig_from_arg(const char *arg)
         nbyte = 0;
     } else {
         for (cp = arg; (ch = *cp); cp++) {
-            if ((ch >= '0') && (ch <= '9'))
-                continue;
-            if ((ch >= 'A') && (ch <= 'Z'))
-                continue;
-            if ((ch >= 'a') && (ch <= 'z'))
-                continue;
-            if (strchr("/.-#", ch))
-                continue;
-            panic("bad char");
+            if (!is_safe_unisig_uri_char(ch)) {
+                panic("bad char");
+            }
         }
         memcpy(tail, arg, nbyte);
     }
