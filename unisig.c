@@ -191,14 +191,20 @@ static int parse_hex_bytes(
     unsigned int digit;
     unsigned int byte;
     for (; nbyte; nbyte--) {
-        if ((digit = parse_lowercase_hex_digit(*hex)) == (unsigned int)-1)
-            return 0;
-        hex++;
-        byte = digit << 4;
-        if ((digit = parse_lowercase_hex_digit(*hex)) == (unsigned int)-1)
-            return 0;
-        hex++;
-        byte |= digit;
+        byte = 0;
+        {
+            if ((digit = parse_lowercase_hex_digit(*hex)) == (unsigned int)-1)
+                return 0;
+            hex++;
+            byte |= digit;
+        }
+        byte <<= 4;
+        {
+            if ((digit = parse_lowercase_hex_digit(*hex)) == (unsigned int)-1)
+                return 0;
+            hex++;
+            byte |= digit;
+        }
         *bytes++ = byte;
     }
     if (*hex != nextch)
