@@ -43,7 +43,6 @@ static const unsigned char magic[7]
 static unsigned char *const head = buffer;
 static unsigned char *const tail = head + sizeof(magic) + 1;
 static const char *oflag;
-static const char *newcmd;
 
 static void generic_usage(FILE *stream, int status);
 
@@ -184,7 +183,7 @@ static unsigned int parse_lowercase_hex_digit(int ch)
 }
 
 static int parse_hex_bytes(
-    const char **hexp, unsigned char **bytesp, int nextch, size_t nbyte)
+    const char **hexp, unsigned char **bytesp, size_t nbyte, int nextch)
 {
     const char *hex = *hexp;
     unsigned char *bytes = *bytesp;
@@ -220,16 +219,21 @@ static int parse_uuid(const char *s, unsigned char outbuf[16])
     unsigned char *out;
 
     out = outbuf;
-    if (!parse_hex_bytes(&s, &out, '-', 8))
+    if (!parse_hex_bytes(&s, &out, 4, '-')) {
         return 0;
-    if (!parse_hex_bytes(&s, &out, '-', 4))
+    }
+    if (!parse_hex_bytes(&s, &out, 2, '-')) {
         return 0;
-    if (!parse_hex_bytes(&s, &out, '-', 4))
+    }
+    if (!parse_hex_bytes(&s, &out, 2, '-')) {
         return 0;
-    if (!parse_hex_bytes(&s, &out, '-', 4))
+    }
+    if (!parse_hex_bytes(&s, &out, 2, '-')) {
         return 0;
-    if (!parse_hex_bytes(&s, &out, '\0', 12))
+    }
+    if (!parse_hex_bytes(&s, &out, 6, '\0')) {
         return 0;
+    }
     return 1;
 }
 
@@ -255,20 +259,24 @@ static void make_unisig_from_arg(const char *arg)
     if (nbyte > 255) {
         panic("signature cannot be longer than 255 bytes");
     }
-    for (cp = arg; (ch = *cp); cp++) {
-        if ((ch >= '0') && (ch <= '9'))
-            continue;
-        if ((ch >= 'A') && (ch <= 'Z'))
-            continue;
-        if ((ch >= 'a') && (ch <= 'z'))
-            continue;
-        if (strchr("/.-#", ch))
-            continue;
-        panic("bad char");
+    if (parse_uuid(arg, tail)) {
+        nbyte = 0;
+    } else {
+        for (cp = arg; (ch = *cp); cp++) {
+            if ((ch >= '0') && (ch <= '9'))
+                continue;
+            if ((ch >= 'A') && (ch <= 'Z'))
+                continue;
+            if ((ch >= 'a') && (ch <= 'z'))
+                continue;
+            if (strchr("/.-#", ch))
+                continue;
+            panic("bad char");
+        }
+        memcpy(tail, arg, nbyte);
     }
     memcpy(head, magic, sizeof(magic));
     head[sizeof(magic)] = nbyte;
-    memcpy(tail, arg, nbyte);
 }
 
 static void print_hex_byte(unsigned int byte) { printf("%02x", byte); }
@@ -460,7 +468,7 @@ static void run_cmd(const struct cmd *cmd, char **args)
 
     if (cmd->narg) {
         if (*args) {
-            newcmd = *args++;
+            make_unisig_from_arg(*args++);
         } else {
             usage("too few arguments");
         }
