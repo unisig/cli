@@ -341,11 +341,13 @@ static void copy_remaining_binary_input_to_output(void)
 static void print_tail_ascii(void)
 {
     size_t i, n;
+    int ch;
 
     n = gettaillen();
     for (i = 0; i < n; i++) {
-        if (isprint(tail[i])) {
-            printf("%c", tail[i]);
+        ch = tail[i];
+        if (isprint(ch)) {
+            printf("%c", ch);
         } else {
             printf("?");
         }
