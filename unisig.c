@@ -408,22 +408,28 @@ static const size_t ncmd = sizeof(cmds) / sizeof(cmds[0]);
 
 static void generic_usage(FILE *stream, int status)
 {
-    fprintf(stream, "%s %s\n", PROGNAME, "addnew sig [file ...] [-o output]");
-    fprintf(stream, "%s %s\n", PROGNAME, "change sig [file ...] [-o output]");
-    fprintf(stream, "%s %s\n", PROGNAME, "remove [file ...] [-o output]");
-    fprintf(stream, "%s %s\n", PROGNAME, "list [file ...]");
-    fprintf(stream, "%s %s\n", PROGNAME, "uuidgen");
-    fprintf(stream, "%s %s\n", PROGNAME, "version");
-    fprintf(stream, "%s %s\n", PROGNAME, "help");
+    fprintf(stream, "usage: %s %s\n", PROGNAME,
+        "addnew sig [file ...] [-o output]");
+    fprintf(stream, "usage: %s %s\n", PROGNAME,
+        "change sig [file ...] [-o output]");
+    fprintf(
+        stream, "usage: %s %s\n", PROGNAME, "remove [file ...] [-o output]");
+    fprintf(stream, "usage: %s %s\n", PROGNAME, "list [file ...]");
+    fprintf(stream, "usage: %s %s\n", PROGNAME, "uuidgen");
+    fprintf(stream, "usage: %s %s\n", PROGNAME, "version");
+    fprintf(stream, "usage: %s %s\n", PROGNAME, "help");
     exit(status);
 }
 
 static void usage(const char *msg)
 {
     if (msg) {
-        fprintf(stderr, "%s: %s\n", PROGNAME, msg);
+        if (msg[0]) {
+            fprintf(stderr, "%s: %s\n", PROGNAME, msg);
+        } else {
+            fprintf(stderr, "\n");
+        }
     }
-    fprintf(stderr, "\n");
     generic_usage(stderr, 2);
 }
 
@@ -533,7 +539,7 @@ int main(int argc, char **argv)
         }
     }
     if (argc < 2) {
-        usage("no subcommand given");
+        usage(0);
     }
     argv++;
     subcmd = *argv++;
