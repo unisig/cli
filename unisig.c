@@ -7,6 +7,7 @@
 #define UNISIG_UNIX
 #endif
 
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -172,11 +173,11 @@ static void binary_input_random(void *bytes, size_t nbyte)
 static const char *namespace_dns = "6ba7b810-9dad-11d1-80b4-00c04fd430c8";
 static const char *namespace_url = "6ba7b811-9dad-11d1-80b4-00c04fd430c8";
 
-static unsigned int parse_lowercase_hex_digit(int ch)
+static unsigned int parse_hex_digit(int ch)
 {
     const char digits[] = "0123456789abcdef";
     const char *digitp;
-    if (!(digitp = strchr(digits, ch)))
+    if (!(digitp = strchr(digits, tolower(ch))))
         return (unsigned int)-1;
     return (unsigned int)(digitp - digits);
 }
@@ -191,14 +192,14 @@ static int parse_hex_bytes(
     for (; nbyte; nbyte--) {
         byte = 0;
         {
-            if ((digit = parse_lowercase_hex_digit(*hex)) == (unsigned int)-1)
+            if ((digit = parse_hex_digit(*hex)) == (unsigned int)-1)
                 return 0;
             hex++;
             byte |= digit;
         }
         byte <<= 4;
         {
-            if ((digit = parse_lowercase_hex_digit(*hex)) == (unsigned int)-1)
+            if ((digit = parse_hex_digit(*hex)) == (unsigned int)-1)
                 return 0;
             hex++;
             byte |= digit;
