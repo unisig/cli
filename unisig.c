@@ -376,6 +376,7 @@ static void subcmd_uuidgen(void)
 {
     generate_uuid_variant_1_version_four();
     print_tail_uuid();
+    printf("\n");
 }
 
 static void subcmd_version(void) { printf("%s %s\n", PROGNAME, PROGVERSION); }
