@@ -351,7 +351,7 @@ static void print_tail_ascii(void)
     }
 }
 
-static void subcmd_addnew(void)
+static void subcmd_prepend(void)
 {
     binary_output_write_unisig();
     copy_remaining_binary_input_to_output();
@@ -360,7 +360,7 @@ static void subcmd_addnew(void)
 static void subcmd_change(void)
 {
     binary_input_read_unisig();
-    subcmd_addnew();
+    subcmd_prepend();
 }
 
 static void subcmd_remove(void)
@@ -369,7 +369,7 @@ static void subcmd_remove(void)
     copy_remaining_binary_input_to_output();
 }
 
-static void subcmd_list(void)
+static void subcmd_read(void)
 {
     binary_input_read_unisig();
     if (binary_input != stdin) {
@@ -407,10 +407,10 @@ struct cmd {
 };
 
 static const struct cmd cmds[] = {
-    { subcmd_addnew, "addnew", 1, BINARY, BINARY },
+    { subcmd_prepend, "prepend", 1, BINARY, BINARY },
     { subcmd_change, "change", 1, BINARY, BINARY },
     { subcmd_remove, "remove", 0, BINARY, BINARY },
-    { subcmd_list, "list", 0, BINARY, TEXT },
+    { subcmd_read, "read", 0, BINARY, TEXT },
     { subcmd_uuidgen, "uuidgen", 0, TEXT, TEXT },
     { subcmd_version, "version", 0, TEXT, TEXT },
     { subcmd_help, "help", 0, TEXT, TEXT },
@@ -421,12 +421,12 @@ static const size_t ncmd = sizeof(cmds) / sizeof(cmds[0]);
 static void generic_usage(FILE *stream, int status)
 {
     fprintf(stream, "usage: %s %s\n", PROGNAME,
-        "addnew sig [file ...] [-o output]");
+        "prepend sig [file ...] [-o output]");
     fprintf(stream, "usage: %s %s\n", PROGNAME,
         "change sig [file ...] [-o output]");
     fprintf(
         stream, "usage: %s %s\n", PROGNAME, "remove [file ...] [-o output]");
-    fprintf(stream, "usage: %s %s\n", PROGNAME, "list [file ...]");
+    fprintf(stream, "usage: %s %s\n", PROGNAME, "read [file ...]");
     fprintf(stream, "usage: %s %s\n", PROGNAME, "uuidgen");
     fprintf(stream, "usage: %s %s\n", PROGNAME, "version");
     fprintf(stream, "usage: %s %s\n", PROGNAME, "help");
