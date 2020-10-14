@@ -7,7 +7,6 @@
 #define UNISIG_UNIX
 #endif
 
-#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -346,7 +345,7 @@ static void print_tail_ascii(void)
     n = gettaillen();
     for (i = 0; i < n; i++) {
         ch = tail[i];
-        if (isprint(ch)) {
+        if (is_safe_unisig_uri_char(ch)) {
             printf("%c", ch);
         } else {
             printf("?");
@@ -379,10 +378,9 @@ static void subcmd_list(void)
         printf("%s: ", binary_input_name);
     }
     if (is_uuid()) {
-        printf("UUID: ");
+        printf("UUID ");
         print_tail_uuid();
     } else {
-        printf("URI: ");
         print_tail_ascii();
     }
     printf("\n");
